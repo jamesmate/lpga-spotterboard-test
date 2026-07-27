@@ -183,43 +183,33 @@ export function Spotterboard() {
         </MGroup>
 
         {showFront && (
-          <Stack gap={2} style={{ flex: 1, minHeight: 0 }}>
-            <Text size="xs" fw={700} c={boardColors.sectionLabel} tt="uppercase">
-              Front Nine
-            </Text>
-            <Box style={{ flex: 1, minHeight: 0 }}>
-              <HoleRow
-                holes={FRONT_NINE}
-                onCourseGroups={onCourseGroups}
-                players={players}
-                expandedHoleNumber={expandedHoleNumber}
-                onToggle={toggleHole}
-                queue={hole1Queue}
-                activePars={activePars}
-                highlightedGroupIds={highlightedGroupIds}
-              />
-            </Box>
-          </Stack>
+          <Box style={{ flex: 1, minHeight: 0 }}>
+            <HoleRow
+              holes={FRONT_NINE}
+              onCourseGroups={onCourseGroups}
+              players={players}
+              expandedHoleNumber={expandedHoleNumber}
+              onToggle={toggleHole}
+              queue={hole1Queue}
+              activePars={activePars}
+              highlightedGroupIds={highlightedGroupIds}
+            />
+          </Box>
         )}
 
         {showBack && (
-          <Stack gap={2} style={{ flex: 1, minHeight: 0 }}>
-            <Text size="xs" fw={700} c={boardColors.sectionLabel} tt="uppercase">
-              Back Nine
-            </Text>
-            <Box style={{ flex: 1, minHeight: 0 }}>
-              <HoleRow
-                holes={BACK_NINE}
-                onCourseGroups={onCourseGroups}
-                players={players}
-                expandedHoleNumber={expandedHoleNumber}
-                onToggle={toggleHole}
-                queue={hole10Queue}
-                activePars={activePars}
-                highlightedGroupIds={highlightedGroupIds}
-              />
-            </Box>
-          </Stack>
+          <Box style={{ flex: 1, minHeight: 0 }}>
+            <HoleRow
+              holes={BACK_NINE}
+              onCourseGroups={onCourseGroups}
+              players={players}
+              expandedHoleNumber={expandedHoleNumber}
+              onToggle={toggleHole}
+              queue={hole10Queue}
+              activePars={activePars}
+              highlightedGroupIds={highlightedGroupIds}
+            />
+          </Box>
         )}
       </Stack>
     </Box>
