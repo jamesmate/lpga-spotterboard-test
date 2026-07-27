@@ -34,10 +34,9 @@ const ANIMATION_SPEED_MULTIPLIER = 1.25;
 const LAYOUT_TRANSITION = { type: 'spring', duration: 0.3 * ANIMATION_SPEED_MULTIPLIER, bounce: 0.2 } as const;
 
 // A group leaving a slot slides away (no fade); a group entering one
-// slides in from the same direction, so it reads as continuous movement
-// through the board rather than a pop in/out.
+// slides in from the same direction using the exact same transition, so
+// leaving and arriving read as one continuous, symmetrical movement.
 const SLIDE_DISTANCE = 26;
-const EXIT_TRANSITION = { duration: 0.35 * ANIMATION_SPEED_MULTIPLIER, ease: 'easeIn' } as const;
 
 export function GroupCard({ group, players, variant, compact, id, highlighted }: GroupCardProps) {
   const isOnCourse = variant === 'onCourse';
@@ -53,7 +52,7 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
       layout
       initial={{ opacity: 1, y: -SLIDE_DISTANCE }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 1, y: SLIDE_DISTANCE, transition: EXIT_TRANSITION }}
+      exit={{ opacity: 1, y: SLIDE_DISTANCE }}
       transition={LAYOUT_TRANSITION}
       style={{ width: '100%', height: maximize ? '100%' : undefined }}
     >
