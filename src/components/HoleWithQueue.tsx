@@ -106,8 +106,8 @@ export function HoleWithQueue({ hole, groups, players, queue, state, onToggle, h
             scrollbar: { background: 'rgba(0,0,0,0.06)' },
           }}
         >
-          <Stack gap={0} pb={4}>
-            <AnimatePresence>
+          <Stack gap={0} pb={4} style={{ position: 'relative' }}>
+            <AnimatePresence mode="popLayout">
               {queue.map((g) => (
                 <GroupCard
                   key={g.id}
@@ -165,7 +165,7 @@ export function HoleWithQueue({ hole, groups, players, queue, state, onToggle, h
                   </Text>
                 )}
                 <Stack gap={4} style={{ flex: 1, minHeight: 0 }}>
-                  <AnimatePresence>
+                  <AnimatePresence mode="popLayout">
                     {slotGroups.map((g) => (
                       <GroupCard
                         key={g.id}

@@ -133,7 +133,7 @@ export function Hole({ hole, groups, players, state, onToggle, highlightedGroupI
                 </Text>
               )}
               <Stack gap={4} style={{ flex: 1, minHeight: 0 }}>
-                <AnimatePresence>
+                <AnimatePresence mode="popLayout">
                   {slotGroups.map((g) => (
                     <GroupCard
                       key={g.id}
