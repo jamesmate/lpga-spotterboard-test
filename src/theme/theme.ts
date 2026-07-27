@@ -34,13 +34,13 @@ export const boardColors = {
   pageText: '#20232a',
   sectionLabel: '#005288',
   // Generic panel chrome (top bar, hole-map boxes) — matches the hole header colour.
-  panelBg: '#575D90',
+  panelBg: '#005288',
   panelBgAlt: '#6b619c',
-  headerBg: '#575D90',
+  headerBg: '#005288',
   // Sampled from the LPGA logo's background — used for the top toolbar only.
   toolbarBg: '#005288',
-  // Hole card header (number/par/yardage) — distinct from slot background below.
-  holeHeaderBg: '#575D90',
+  // Hole card header (number/par/yardage) — matches the toolbar blue.
+  holeHeaderBg: '#005288',
   holeHeaderText: '#1a2233',
   holeHeaderAccent: '#5E548E',
   holeHeaderMuted: '#3a4152',

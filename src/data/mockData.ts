@@ -115,6 +115,7 @@ function genGroups(opts: GenOptions) {
         currentHole: opts.startingHole,
         slot: null,
         holesRemaining: 18,
+        onBall: null,
       });
     } else {
       const { hole: currentHole, slot } = slotPool[i];
@@ -134,6 +135,7 @@ function genGroups(opts: GenOptions) {
         currentHole,
         slot,
         holesRemaining: Math.max(18 - holesPlayed, 0),
+        onBall: null,
       });
       // give on-course players a live round score too
       memberIds.forEach((id) => {

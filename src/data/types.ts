@@ -1,5 +1,15 @@
 export type SlotType = 'tee' | 'fairway' | 'green';
 
+export type LieType = 'Tee' | 'Fairway' | 'Rough' | 'Bunker' | 'Green' | 'Fringe';
+
+/** A single "who's over the ball" update, as reported by the walking scorer. */
+export interface OnBallInfo {
+  playerId: string;
+  distanceToPin: number;
+  distanceUnit: 'yds' | 'ft';
+  lie: LieType;
+}
+
 export interface HoleInfo {
   number: number;
   par: number;
@@ -32,6 +42,9 @@ export interface Group {
   slot: SlotType | null;
   /** Holes left to play */
   holesRemaining: number;
+  /** Which player in the group is currently over the ball, per the walking
+   * scorer feed — null when off-course (pending) or between updates. */
+  onBall: OnBallInfo | null;
 }
 
 export interface TournamentData {
