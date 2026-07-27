@@ -133,9 +133,9 @@ export function HoleMap({ hole, groups, players }: HoleMapProps) {
         background: boardColors.panelBg,
         border: `1px solid ${boardColors.slotBorder}`,
         borderRadius: 8,
-        padding: 14,
+        padding: 8,
         display: 'flex',
-        gap: 16,
+        gap: 8,
         alignItems: 'flex-start',
         animation: 'holeMapFadeIn 260ms ease',
       }}
@@ -152,7 +152,10 @@ export function HoleMap({ hole, groups, players }: HoleMapProps) {
           position: 'relative',
           height: '100%',
           maxHeight: '100%',
-          aspectRatio: `${VIEW_W} / ${VIEW_H}`,
+          // Wider than the SVG's native VIEW_W/VIEW_H portrait ratio — the
+          // course art is centered in its viewBox so the extra width just
+          // shows more background either side, giving a wider visualiser.
+          aspectRatio: `${VIEW_W * 1.6} / ${VIEW_H}`,
           flexShrink: 0,
           borderRadius: 8,
           overflow: 'hidden',
@@ -234,7 +237,7 @@ export function HoleMap({ hole, groups, players }: HoleMapProps) {
         )}
       </Box>
 
-      <Stack gap={8} style={{ flex: 1, minWidth: 0 }}>
+      <Stack gap={4} style={{ flex: 1, minWidth: 0 }}>
         <Stack gap={0}>
           <Text size="md" fw={800} c="white">
             Hole {hole.number} — Par {hole.par}
@@ -245,7 +248,7 @@ export function HoleMap({ hole, groups, players }: HoleMapProps) {
         </Stack>
 
         {view === '3d' && selectedShot && (
-          <Box style={{ background: boardColors.headerBg, border: `1px solid ${boardColors.slotBorder}`, borderRadius: 6, padding: '8px 10px' }}>
+          <Box style={{ background: boardColors.headerBg, border: `1px solid ${boardColors.slotBorder}`, borderRadius: 6, padding: '6px 8px' }}>
             <MGroup gap={6} mb={4}>
               <Box style={{ width: 9, height: 9, borderRadius: '50%', background: selectedShot.playerColor, flexShrink: 0 }} />
               <Text size="sm" fw={700} c="white">
@@ -273,7 +276,7 @@ export function HoleMap({ hole, groups, players }: HoleMapProps) {
               background: boardColors.headerBg,
               border: `1px solid ${boardColors.slotBorder}`,
               borderRadius: 6,
-              padding: '8px 10px',
+              padding: '6px 8px',
             }}
           >
             <MGroup justify="space-between" mb={4}>
