@@ -38,6 +38,11 @@ const LAYOUT_TRANSITION = { type: 'spring', duration: 0.3 * ANIMATION_SPEED_MULT
 // leaving and arriving read as one continuous, symmetrical movement.
 const SLIDE_DISTANCE = 26;
 
+// Every player row is exactly this tall; a row with its on-ball detail
+// expanded is exactly double — deterministic, not just "whatever's left"
+// after stretching to fill the card (which produced uneven gaps before).
+const ROW_HEIGHT = 24;
+
 export function GroupCard({ group, players, variant, compact, id, highlighted }: GroupCardProps) {
   const isOnCourse = variant === 'onCourse';
   const slotColors = group.slot ? boardColors.slotGroupColors[group.slot] : null;
@@ -94,7 +99,7 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
           </Text>
         </Group>
 
-        <Stack gap={0} style={maximize ? { flex: 1, minHeight: 0, justifyContent: 'space-between' } : undefined}>
+        <Stack gap={0} style={maximize ? { flex: 1, minHeight: 0 } : undefined}>
           {group.playerIds.map((pid) => {
             const player = players[pid];
             if (!player) return null;
@@ -102,8 +107,8 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
             const isOnBall = isOnCourse && group.onBall?.playerId === pid;
             const isOnFire = isOnCourse && player.birdieStreak >= 2;
             return (
-              <motion.div key={pid} layout transition={LAYOUT_TRANSITION} style={{ borderTop: `1px solid ${boardColors.groupBorder}` }}>
-                <Group justify="space-between" wrap="nowrap" gap={4} px={6} py={1}>
+              <motion.div key={pid} layout transition={LAYOUT_TRANSITION} style={{ borderTop: `1px solid ${boardColors.groupBorder}`, flexShrink: 0 }}>
+                <Group justify="space-between" wrap="nowrap" gap={4} px={6} style={{ height: ROW_HEIGHT }}>
                   <Group gap={4} wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
                     <Text size={compact ? '12px' : 'sm'} fw={700} tt="uppercase" c={boardColors.groupText} truncate style={{ flex: 1, minWidth: 0 }}>
                       {surname(player.name)}
@@ -128,16 +133,16 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
                     <motion.div
                       key="onball-detail"
                       initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
+                      animate={{ height: ROW_HEIGHT, opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={LAYOUT_TRANSITION}
                       style={{ overflow: 'hidden' }}
                     >
-                      <Stack gap={2} px={6} pb={5} pt={1}>
-                        <Text size="10px" fw={600} c={boardColors.groupText} style={{ opacity: 0.85 }}>
+                      <Stack gap={0} px={6} justify="center" style={{ height: ROW_HEIGHT }}>
+                        <Text size="9px" fw={600} c={boardColors.groupText} lh={1.3} style={{ opacity: 0.85 }}>
                           Distance to pin: {group.onBall.distanceToPin} {group.onBall.distanceUnit}
                         </Text>
-                        <Text size="10px" fw={600} c={boardColors.groupText} style={{ opacity: 0.85 }}>
+                        <Text size="9px" fw={600} c={boardColors.groupText} lh={1.3} style={{ opacity: 0.85 }}>
                           Lie: {group.onBall.lie}
                         </Text>
                       </Stack>
