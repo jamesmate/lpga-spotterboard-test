@@ -92,6 +92,7 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
             if (!player) return null;
             const score = isOnCourse ? player.roundScore : player.totalScore;
             const isOnBall = isOnCourse && group.onBall?.playerId === pid;
+            const isOnFire = isOnCourse && player.birdieStreak >= 2;
             return (
               <motion.div key={pid} layout transition={LAYOUT_TRANSITION} style={{ borderTop: `1px solid ${boardColors.groupBorder}` }}>
                 <Group justify="space-between" wrap="nowrap" gap={4} px={6} py={1}>
@@ -99,6 +100,11 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
                     <Text size={compact ? '12px' : 'sm'} fw={700} tt="uppercase" c={boardColors.groupText} truncate style={{ flex: 1, minWidth: 0 }}>
                       {surname(player.name)}
                     </Text>
+                    {isOnFire && (
+                      <Text size={compact ? '12px' : 'sm'} style={{ flexShrink: 0, lineHeight: 1 }} title={`${player.birdieStreak} birdies in a row`}>
+                        🔥
+                      </Text>
+                    )}
                     {isOnBall && (
                       <Text size={compact ? '12px' : 'sm'} style={{ flexShrink: 0, lineHeight: 1 }}>
                         🏌

@@ -25,6 +25,27 @@ const LIES_BY_SLOT: Record<SlotType, LieType[]> = {
   green: ['Green', 'Green', 'Green', 'Fringe'],
 };
 
+/** Roughly realistic hole-score distribution, relative to par, rolled per
+ * player whenever their group holes out. Used to drive live roundScore and
+ * birdie-streak ("on fire") tracking. */
+const HOLE_SCORE_WEIGHTS: { delta: number; weight: number }[] = [
+  { delta: -2, weight: 3 }, // eagle
+  { delta: -1, weight: 22 }, // birdie
+  { delta: 0, weight: 50 }, // par
+  { delta: 1, weight: 20 }, // bogey
+  { delta: 2, weight: 5 }, // double bogey+
+];
+const HOLE_SCORE_TOTAL_WEIGHT = HOLE_SCORE_WEIGHTS.reduce((sum, w) => sum + w.weight, 0);
+
+function rollHoleScore(): number {
+  let r = Math.random() * HOLE_SCORE_TOTAL_WEIGHT;
+  for (const { delta, weight } of HOLE_SCORE_WEIGHTS) {
+    if (r < weight) return delta;
+    r -= weight;
+  }
+  return 0;
+}
+
 function slotKey(hole: number, slot: SlotType) {
   return `${hole}:${slot}`;
 }
@@ -74,12 +95,14 @@ export function useLiveBoard(tickMs = 3000) {
         : { ...g }
     )
   );
-  const [players] = useState<Record<string, Player>>(MOCK_PLAYERS);
+  const [players, setPlayers] = useState<Record<string, Player>>(MOCK_PLAYERS);
   const tickRef = useRef(0);
 
   useEffect(() => {
     const id = setInterval(() => {
       tickRef.current += 1;
+
+      const holeOutUpdates: { pid: string; delta: number }[] = [];
 
       setGroups((prev) => {
         const byId = new Map(prev.map((g) => [g.id, { ...g } as Group]));
@@ -135,7 +158,12 @@ export function useLiveBoard(tickMs = 3000) {
           const holedOut = slot === 'green';
           g.currentHole = targetHole;
           g.slot = targetSlot;
-          if (holedOut) g.holesRemaining = Math.max(g.holesRemaining - 1, 0);
+          if (holedOut) {
+            g.holesRemaining = Math.max(g.holesRemaining - 1, 0);
+            for (const pid of g.playerIds) {
+              holeOutUpdates.push({ pid, delta: rollHoleScore() });
+            }
+          }
           g.onBall = generateOnBall(g, targetHole, targetSlot);
         }
 
@@ -164,6 +192,23 @@ export function useLiveBoard(tickMs = 3000) {
 
         return prev.map((g) => byId.get(g.id) ?? g);
       });
+
+      if (holeOutUpdates.length) {
+        setPlayers((prevPlayers) => {
+          const next = { ...prevPlayers };
+          for (const { pid, delta } of holeOutUpdates) {
+            const p = next[pid];
+            if (!p) continue;
+            const isBirdie = delta === -1;
+            next[pid] = {
+              ...p,
+              roundScore: p.roundScore + delta,
+              birdieStreak: isBirdie ? p.birdieStreak + 1 : 0,
+            };
+          }
+          return next;
+        });
+      }
     }, tickMs);
     return () => clearInterval(id);
   }, [tickMs]);

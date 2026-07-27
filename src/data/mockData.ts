@@ -58,6 +58,7 @@ function makePlayer(totalScore: number): Player {
     country: pick(COUNTRIES),
     roundScore: 0,
     totalScore,
+    birdieStreak: 0,
   };
   players[id] = p;
   return p;

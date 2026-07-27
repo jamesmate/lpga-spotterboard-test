@@ -15,6 +15,9 @@ interface HoleRowProps {
   queue: GroupModel[];
   /** Par values currently toggled on in the filter bar; empty = show all */
   activePars: Set<number>;
+  /** When true, dim every hole that doesn't currently have a player on a
+   * 2+ birdie streak (🔥) */
+  showOnFireOnly: boolean;
   /** Group ids currently matching the search box, drawn with a highlight ring */
   highlightedGroupIds: Set<string>;
 }
@@ -29,10 +32,11 @@ interface HoleRowProps {
  * out), which visually slides the expanded hole to the left, and an inline
  * HoleMap grows to fill the reclaimed space. The other nine's row is left
  * completely untouched and stays fully visible. Holes whose par isn't in
- * the active par filter collapse the same way, letting the matching holes
- * fill the freed width.
+ * the active par filter, or (when the fire filter is on) that have no
+ * player currently on a 2+ birdie streak, collapse the same way, letting
+ * the matching holes fill the freed width.
  */
-export function HoleRow({ holes, onCourseGroups, players, expandedHoleNumber, onToggle, queue, activePars, highlightedGroupIds }: HoleRowProps) {
+export function HoleRow({ holes, onCourseGroups, players, expandedHoleNumber, onToggle, queue, activePars, showOnFireOnly, highlightedGroupIds }: HoleRowProps) {
   const containsExpanded = holes.some((h) => h.number === expandedHoleNumber);
 
   return (
@@ -40,7 +44,9 @@ export function HoleRow({ holes, onCourseGroups, players, expandedHoleNumber, on
       <MGroup gap={8} align="stretch" wrap="nowrap" style={{ height: '100%' }}>
         {holes.map((hole, idx) => {
           const isExpanded = hole.number === expandedHoleNumber;
-          const filteredOut = activePars.size > 0 && !activePars.has(hole.par);
+          const holeGroups = onCourseGroups.filter((g) => g.currentHole === hole.number);
+          const hasFireGroup = holeGroups.some((g) => g.playerIds.some((pid) => (players[pid]?.birdieStreak ?? 0) >= 2));
+          const filteredOut = (activePars.size > 0 && !activePars.has(hole.par)) || (showOnFireOnly && !hasFireGroup);
           // Siblings of an expanded hole collapse away (width -> 0) so the
           // expanded hole + HoleMap can take the space. Filtered-out holes
           // just dim in place, keeping every hole the same width.
@@ -52,7 +58,6 @@ export function HoleRow({ holes, onCourseGroups, players, expandedHoleNumber, on
             : filteredOut
             ? 'dimmed'
             : 'normal';
-          const holeGroups = onCourseGroups.filter((g) => g.currentHole === hole.number);
           const isFirst = idx === 0;
           return (
             <Fragment key={hole.number}>

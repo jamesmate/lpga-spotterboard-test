@@ -40,6 +40,7 @@ export function Spotterboard() {
   const [expandedHoleNumber, setExpandedHoleNumber] = useState<number | null>(null);
   const [activePars, setActivePars] = useState<Set<number>>(new Set());
   const [nineFilter, setNineFilter] = useState<NineFilter>('all');
+  const [showOnFireOnly, setShowOnFireOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const lastScrollKeyRef = useRef<string | null>(null);
 
@@ -163,6 +164,12 @@ export function Spotterboard() {
             <FilterButton label="Back 9" active={nineFilter === 'back'} onClick={() => toggleNine('back')} />
           </MGroup>
 
+          <FilterButton
+            label="🔥 On Fire"
+            active={showOnFireOnly}
+            onClick={() => setShowOnFireOnly((prev) => !prev)}
+          />
+
           <TextInput
             placeholder="Search name or group #"
             value={searchQuery}
@@ -194,6 +201,7 @@ export function Spotterboard() {
               onToggle={toggleHole}
               queue={hole1Queue}
               activePars={activePars}
+              showOnFireOnly={showOnFireOnly}
               highlightedGroupIds={highlightedGroupIds}
             />
           </Box>
@@ -209,6 +217,7 @@ export function Spotterboard() {
               onToggle={toggleHole}
               queue={hole10Queue}
               activePars={activePars}
+              showOnFireOnly={showOnFireOnly}
               highlightedGroupIds={highlightedGroupIds}
             />
           </Box>

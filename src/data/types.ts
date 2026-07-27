@@ -24,6 +24,9 @@ export interface Player {
   roundScore: number;
   /** Score relative to par for the tournament so far (prior rounds, used pre-tee-off) */
   totalScore: number;
+  /** Consecutive birdies made on the most recently completed holes (resets
+   * on anything that isn't exactly a birdie). >= 2 means they're "on fire". */
+  birdieStreak: number;
 }
 
 export type GroupStatus = 'pending' | 'on-course' | 'finished';
