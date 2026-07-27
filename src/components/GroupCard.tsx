@@ -1,5 +1,5 @@
 import { Box, Group, Stack, Text } from '@mantine/core';
-import { AnimatePresence, motion, useIsPresent } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import type { Group as GroupModel, Player } from '../data/types';
 import { boardColors } from '../theme/theme';
 import { surname } from '../utils/format';
@@ -26,17 +26,9 @@ interface GroupCardProps {
   highlighted?: boolean;
 }
 
-// Animations run 25% slower than their base feel across the board.
-const ANIMATION_SPEED_MULTIPLIER = 1.25;
-
 // Shared spring used for every layout move (slot-to-slot, queue-to-tee, row
 // expand/collapse) so the whole board animates with one consistent feel.
-const LAYOUT_TRANSITION = { type: 'spring', duration: 0.3 * ANIMATION_SPEED_MULTIPLIER, bounce: 0.2 } as const;
-
-// A group leaving a slot slides away (no fade); a group entering one
-// slides in from the same direction using the exact same transition, so
-// leaving and arriving read as one continuous, symmetrical movement.
-const SLIDE_DISTANCE = 26;
+const LAYOUT_TRANSITION = { type: 'spring', stiffness: 380, damping: 34, mass: 0.7 } as const;
 
 // Every player row is exactly this tall; a row with its on-ball detail
 // expanded is exactly double — deterministic, not just "whatever's left"
@@ -51,20 +43,11 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
   // A full three-player group should always fill its hole slot edge to
   // edge, rather than leaving slot background visible beneath it.
   const maximize = isOnCourse && group.playerIds.length === 3;
-  // While this card is present, `layout` gives smooth FLIP repositioning
-  // (siblings reflowing, maximize toggling, etc). But once it starts
-  // exiting, `layout` keeps trying to animate its box to match its new
-  // (popLayout-absolute) position — fighting with the explicit slide-out
-  // below over the same transform and causing it to stall partway through
-  // before snapping away. Disabling layout for the exit phase fixes it.
-  const isPresent = useIsPresent();
 
   return (
     <motion.div
-      layout={isPresent}
-      initial={{ opacity: 1, y: -SLIDE_DISTANCE }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 1, y: SLIDE_DISTANCE }}
+      layout
+      layoutId={`groupcard-${group.id}`}
       transition={LAYOUT_TRANSITION}
       style={{ width: '100%', height: maximize ? '100%' : undefined }}
     >
@@ -145,7 +128,7 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
                       transition={LAYOUT_TRANSITION}
                       style={{ overflow: 'hidden' }}
                     >
-                      <Stack gap={0} px={6} justify="center" style={{ height: ROW_HEIGHT, overflow: 'hidden' }}>
+                      <Stack gap={0} px={6} justify="flex-start" style={{ height: ROW_HEIGHT, overflow: 'hidden' }}>
                         <Text size="9px" fw={600} c={boardColors.groupText} lh={1.3} truncate style={{ opacity: 0.85 }}>
                           Distance to pin: {group.onBall.distanceToPin} {group.onBall.distanceUnit}
                         </Text>
