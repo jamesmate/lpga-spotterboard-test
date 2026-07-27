@@ -33,27 +33,37 @@ interface HoleShotTracer3DProps {
   onSelectShot: (shot: SimShot & { playerName: string; playerColor: string }) => void;
 }
 
-function useOrbit(camera: THREE.PerspectiveCamera | null, target: THREE.Vector3, domEl: HTMLElement | null) {
-  const state = useRef({ az: 0.65, pol: 1.05, radius: 46, dragging: false, lastX: 0, lastY: 0 });
+// True isometric elevation (atan(1/sqrt(2)) ≈ 35.264° from horizontal) and an
+// azimuth of -45°, which together put the green up-and-to-the-right of the
+// tee for a straight hole — the classic Baldur's Gate 3 / RollerCoaster
+// Tycoon / Project Zomboid camera. Elevation is fixed (no tilt); only yaw
+// (azimuth) rotates via drag, and scroll adjusts the orthographic zoom
+// rather than camera distance (distance doesn't change apparent size under
+// an orthographic projection).
+const ISO_POLAR = THREE.MathUtils.degToRad(90 - 35.264);
+const ISO_AZIMUTH = -Math.PI / 4;
+const ISO_DISTANCE = 60;
+
+function useIsoOrbit(camera: THREE.OrthographicCamera | null, target: THREE.Vector3, domEl: HTMLElement | null) {
+  const state = useRef({ az: ISO_AZIMUTH, zoom: 1, dragging: false, lastX: 0 });
   useEffect(() => {
     if (!domEl || !camera) return;
     const s = state.current;
     const applyCam = () => {
-      const p = s.pol;
-      const a = s.az;
-      const r = s.radius;
+      const r = ISO_DISTANCE;
       camera.position.set(
-        target.x + r * Math.sin(p) * Math.sin(a),
-        Math.max(2, r * Math.cos(p)),
-        target.z + r * Math.sin(p) * Math.cos(a)
+        target.x + r * Math.sin(ISO_POLAR) * Math.sin(s.az),
+        target.y + r * Math.cos(ISO_POLAR),
+        target.z + r * Math.sin(ISO_POLAR) * Math.cos(s.az)
       );
       camera.lookAt(target);
+      camera.zoom = s.zoom;
+      camera.updateProjectionMatrix();
     };
     applyCam();
     const onDown = (e: PointerEvent) => {
       s.dragging = true;
       s.lastX = e.clientX;
-      s.lastY = e.clientY;
     };
     const onUp = () => {
       s.dragging = false;
@@ -61,16 +71,13 @@ function useOrbit(camera: THREE.PerspectiveCamera | null, target: THREE.Vector3,
     const onMove = (e: PointerEvent) => {
       if (!s.dragging) return;
       const dx = e.clientX - s.lastX;
-      const dy = e.clientY - s.lastY;
       s.lastX = e.clientX;
-      s.lastY = e.clientY;
       s.az -= dx * 0.006;
-      s.pol = Math.min(1.45, Math.max(0.25, s.pol - dy * 0.005));
       applyCam();
     };
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      s.radius = Math.min(90, Math.max(14, s.radius + e.deltaY * 0.03));
+      s.zoom = Math.min(3, Math.max(0.4, s.zoom - e.deltaY * 0.001));
       applyCam();
     };
     domEl.addEventListener('pointerdown', onDown);
@@ -95,7 +102,7 @@ function useOrbit(camera: THREE.PerspectiveCamera | null, target: THREE.Vector3,
  */
 export function HoleShotTracer3D({ hole, extras, shots, players, visiblePlayerIds, onSelectShot }: HoleShotTracer3DProps) {
   const mountRef = useRef<HTMLDivElement>(null);
-  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
+  const cameraRef = useRef<THREE.OrthographicCamera | null>(null);
   const groupsRef = useRef<Record<string, THREE.Group>>({});
   const targetRef = useRef(new THREE.Vector3());
   const [domEl, setDomEl] = useState<HTMLElement | null>(null);
@@ -114,7 +121,20 @@ export function HoleShotTracer3D({ hole, extras, shots, players, visiblePlayerId
     scene.background = new THREE.Color(SCENE.bg);
     scene.fog = new THREE.Fog(SCENE.bg, 40, 120);
 
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 500);
+    // Half-extent of the orthographic frustum, sized to this hole's length
+    // (plus padding for the green/tee/fairway width) so short par 3s and
+    // long par 5s both frame nicely instead of one being tiny/huge.
+    const L0 = hole.yards * UNIT;
+    const isoHalfExtent = Math.max(30, L0 * 0.42) + 20;
+    const aspect = width / height;
+    const camera = new THREE.OrthographicCamera(
+      -isoHalfExtent * aspect,
+      isoHalfExtent * aspect,
+      isoHalfExtent,
+      -isoHalfExtent,
+      0.1,
+      500
+    );
     cameraRef.current = camera;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
@@ -282,7 +302,11 @@ export function HoleShotTracer3D({ hole, extras, shots, players, visiblePlayerId
     const resize = () => {
       const w = mount.clientWidth || 1;
       const h = mount.clientHeight || 1;
-      camera.aspect = w / h;
+      const a = w / h;
+      camera.left = -isoHalfExtent * a;
+      camera.right = isoHalfExtent * a;
+      camera.top = isoHalfExtent;
+      camera.bottom = -isoHalfExtent;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     };
@@ -307,7 +331,7 @@ export function HoleShotTracer3D({ hole, extras, shots, players, visiblePlayerId
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hole.number]);
 
-  useOrbit(cameraRef.current, targetRef.current, domEl);
+  useIsoOrbit(cameraRef.current, targetRef.current, domEl);
 
   useEffect(() => {
     Object.entries(groupsRef.current).forEach(([id, g]) => {

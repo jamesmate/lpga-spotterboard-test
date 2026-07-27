@@ -228,7 +228,7 @@ export function HoleMap({ hole, groups, players }: HoleMapProps) {
                 borderRadius: 4,
               }}
             >
-              drag to orbit · scroll to zoom · click a marker
+              drag to rotate · scroll to zoom · click a marker
             </Text>
           </Suspense>
         )}
