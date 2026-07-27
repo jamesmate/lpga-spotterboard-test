@@ -161,7 +161,7 @@ export function HoleWithQueue({ hole, groups, players, queue, state, onToggle, h
                     {label}
                   </Text>
                 )}
-                <Stack gap={4}>
+                <Stack gap={4} style={{ flex: 1, minHeight: 0 }}>
                   {slotGroups.map((g) => (
                     <GroupCard
                       key={g.id}

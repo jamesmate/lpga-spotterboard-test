@@ -35,13 +35,16 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
   const slotColors = group.slot ? boardColors.slotGroupColors[group.slot] : null;
   const cardBg = isOnCourse && slotColors ? slotColors.bg : boardColors.pendingGroupBg;
   const cardHeaderBg = isOnCourse && slotColors ? slotColors.headerBg : boardColors.pendingGroupHeaderBg;
+  // A full three-player group should always fill its hole slot edge to
+  // edge, rather than leaving slot background visible beneath it.
+  const maximize = isOnCourse && group.playerIds.length === 3;
 
   return (
     <motion.div
       layout
       layoutId={`groupcard-${group.id}`}
       transition={LAYOUT_TRANSITION}
-      style={{ width: '100%' }}
+      style={{ width: '100%', height: maximize ? '100%' : undefined }}
     >
       <Box
         id={id}
@@ -51,6 +54,9 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
           borderRadius: 6,
           overflow: 'hidden',
           width: '100%',
+          height: maximize ? '100%' : undefined,
+          display: maximize ? 'flex' : undefined,
+          flexDirection: maximize ? 'column' : undefined,
           boxShadow: highlighted ? `0 0 0 3px ${boardColors.pink}55, 0 2px 8px rgba(0,0,0,0.4)` : '0 1px 3px rgba(0,0,0,0.35)',
           transition: 'box-shadow 200ms ease, border-color 200ms ease',
         }}
@@ -61,7 +67,7 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
           gap={4}
           px={6}
           py={2}
-          style={{ background: cardHeaderBg, borderBottom: `1px solid ${boardColors.groupBorder}` }}
+          style={{ background: cardHeaderBg, borderBottom: `1px solid ${boardColors.groupBorder}`, flexShrink: 0 }}
         >
           <Text size={compact ? '9px' : 'sm'} fw={700} c={boardColors.groupText} tt="uppercase" truncate style={{ flexShrink: 1, minWidth: 0 }}>
             Group {group.groupNumber}
@@ -78,7 +84,7 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
           </Text>
         </Group>
 
-        <Stack gap={0}>
+        <Stack gap={0} style={maximize ? { flex: 1, minHeight: 0, justifyContent: 'space-between' } : undefined}>
           {group.playerIds.map((pid) => {
             const player = players[pid];
             if (!player) return null;
@@ -104,14 +110,14 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
                       transition={LAYOUT_TRANSITION}
                       style={{ overflow: 'hidden' }}
                     >
-                      <Stack gap={0} px={6} pb={3}>
-                        <Text size="8px" fw={800} c={boardColors.groupText} style={{ letterSpacing: 0.2 }}>
+                      <Stack gap={2} px={6} pb={5} pt={1}>
+                        <Text size="10px" fw={800} c={boardColors.groupText} style={{ letterSpacing: 0.2 }}>
                           Next To Hit
                         </Text>
-                        <Text size="8px" fw={600} c={boardColors.groupText} style={{ opacity: 0.85 }}>
+                        <Text size="10px" fw={600} c={boardColors.groupText} style={{ opacity: 0.85 }}>
                           Distance to pin: {group.onBall.distanceToPin} {group.onBall.distanceUnit}
                         </Text>
-                        <Text size="8px" fw={600} c={boardColors.groupText} style={{ opacity: 0.85 }}>
+                        <Text size="10px" fw={600} c={boardColors.groupText} style={{ opacity: 0.85 }}>
                           Lie: {group.onBall.lie}
                         </Text>
                       </Stack>
