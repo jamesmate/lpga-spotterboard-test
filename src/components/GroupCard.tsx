@@ -26,9 +26,18 @@ interface GroupCardProps {
   highlighted?: boolean;
 }
 
+// Animations run 25% slower than their base feel across the board.
+const ANIMATION_SPEED_MULTIPLIER = 1.25;
+
 // Shared spring used for every layout move (slot-to-slot, queue-to-tee, row
 // expand/collapse) so the whole board animates with one consistent feel.
-const LAYOUT_TRANSITION = { type: 'spring', stiffness: 380, damping: 34, mass: 0.7 } as const;
+const LAYOUT_TRANSITION = { type: 'spring', duration: 0.3 * ANIMATION_SPEED_MULTIPLIER, bounce: 0.2 } as const;
+
+// A group leaving a slot slides away (no fade); a group entering one
+// slides in from the same direction, so it reads as continuous movement
+// through the board rather than a pop in/out.
+const SLIDE_DISTANCE = 26;
+const EXIT_TRANSITION = { duration: 0.35 * ANIMATION_SPEED_MULTIPLIER, ease: 'easeIn' } as const;
 
 export function GroupCard({ group, players, variant, compact, id, highlighted }: GroupCardProps) {
   const isOnCourse = variant === 'onCourse';
@@ -42,9 +51,9 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, scale: 0.85 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.35, ease: 'easeIn' } }}
+      initial={{ opacity: 1, y: -SLIDE_DISTANCE }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 1, y: SLIDE_DISTANCE, transition: EXIT_TRANSITION }}
       transition={LAYOUT_TRANSITION}
       style={{ width: '100%', height: maximize ? '100%' : undefined }}
     >

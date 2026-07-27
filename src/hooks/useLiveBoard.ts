@@ -9,15 +9,15 @@ const HOLE_YARDS: Record<number, number> = Object.fromEntries(HOLES.map((h) => [
 
 /** Probability an eligible (unblocked) group actually advances on a given
  * tick, so movement staggers naturally instead of the whole field
- * lock-stepping forward together. Tuned against tickMs=3000; scaled down 4x
- * from the original pace so the field moves noticeably slower overall. */
-const MOVE_PROBABILITY = 0.03;
+ * lock-stepping forward together. Tuned against tickMs=3000; 2x the
+ * previous pace (which was itself 4x slower than the original). */
+const MOVE_PROBABILITY = 0.06;
 
 /** Probability an on-course group that *didn't* move this tick still gets a
  * fresh "over the ball" reading — e.g. the scorer clocking that play has
  * passed to the next player in the group, or an updated distance/lie for
  * the player already up. */
-const ON_BALL_REFRESH_PROBABILITY = 0.03;
+const ON_BALL_REFRESH_PROBABILITY = 0.06;
 
 const LIES_BY_SLOT: Record<SlotType, LieType[]> = {
   tee: ['Tee'],
@@ -168,9 +168,9 @@ export function useLiveBoard(tickMs = 3000) {
         }
 
         // Promote the next queued group onto hole 1 / hole 10 only if that
-        // tee is currently clear. Checked roughly every 192s (64 ticks at
-        // 3s) — 4x slower than before, matching the reduced sim speed.
-        if (tickRef.current % 64 === 0) {
+        // tee is currently clear. Checked roughly every 96s (32 ticks at
+        // 3s) — 2x faster than before, matching the doubled sim speed.
+        if (tickRef.current % 32 === 0) {
           for (const startHole of [1, 10] as const) {
             const key = slotKey(startHole, 'tee');
             if (occupancy.has(key)) continue;
