@@ -96,14 +96,14 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
               <motion.div key={pid} layout transition={LAYOUT_TRANSITION} style={{ borderTop: `1px solid ${boardColors.groupBorder}` }}>
                 <Group justify="space-between" wrap="nowrap" gap={4} px={6} py={1}>
                   <Group gap={4} wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+                    <Text size={compact ? '12px' : 'sm'} fw={700} tt="uppercase" c={boardColors.groupText} truncate style={{ flex: 1, minWidth: 0 }}>
+                      {surname(player.name)}
+                    </Text>
                     {isOnBall && (
                       <Text size={compact ? '12px' : 'sm'} style={{ flexShrink: 0, lineHeight: 1 }}>
                         🏌
                       </Text>
                     )}
-                    <Text size={compact ? '12px' : 'sm'} fw={700} tt="uppercase" c={boardColors.groupText} truncate style={{ flex: 1, minWidth: 0 }}>
-                      {surname(player.name)}
-                    </Text>
                   </Group>
                   <Text size={compact ? '12px' : 'sm'} fw={700} c={scoreColor(score)} style={{ flexShrink: 0 }}>
                     {formatScore(score)}
