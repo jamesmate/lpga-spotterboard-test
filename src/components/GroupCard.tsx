@@ -27,8 +27,9 @@ interface GroupCardProps {
 
 export function GroupCard({ group, players, variant, compact, id, highlighted }: GroupCardProps) {
   const isOnCourse = variant === 'onCourse';
-  const cardBg = isOnCourse ? boardColors.groupBg : boardColors.pendingGroupBg;
-  const cardHeaderBg = isOnCourse ? boardColors.groupHeaderBg : boardColors.pendingGroupHeaderBg;
+  const slotColors = group.slot ? boardColors.slotGroupColors[group.slot] : null;
+  const cardBg = isOnCourse && slotColors ? slotColors.bg : boardColors.pendingGroupBg;
+  const cardHeaderBg = isOnCourse && slotColors ? slotColors.headerBg : boardColors.pendingGroupHeaderBg;
 
   return (
     <Box

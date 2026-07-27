@@ -57,19 +57,24 @@ export const boardColors = {
   over: '#7db2ff',
   even: '#d8d2ea',
 
-  // On-course "GroupCard" colours — light mint green, per brand spec.
-  groupBg: '#ACE1AF',
-  groupHeaderBg: '#8fce93',
+  // On-course "GroupCard" colours, keyed by slot — per brand spec:
+  // blue for tee, yellow for fairway, green for green.
+  slotGroupColors: {
+    tee: { bg: '#ABCDEF', headerBg: '#8fb4d9' },
+    fairway: { bg: '#FCFFA4', headerBg: '#eef27a' },
+    green: { bg: '#ACE1AF', headerBg: '#8fce93' },
+  },
   groupBorder: 'rgba(35, 25, 66, 0.25)',
   groupText: '#231942',
   groupAccent: '#5E548E',
-  // Score colours for text on the light green group cards (need darker/more
-  // saturated tones than the ones used on dark panels to stay legible).
+  // Score colours for text on the light slot-coloured group cards (need
+  // darker/more saturated tones than the ones used on dark panels to stay legible).
   groupUnder: '#b3123f',
   groupOver: '#1d4ed8',
   groupEven: '#33313f',
 
-  // Pending / waiting-to-tee-off "GroupCard" colours — pale yellow, per brand spec.
-  pendingGroupBg: '#FCFFA4',
-  pendingGroupHeaderBg: '#eef27a',
+  // Pending / waiting-to-tee-off "GroupCard" colours — a lighter, less
+  // saturated shade of the tee blue (these groups will tee off next).
+  pendingGroupBg: '#E4EEF8',
+  pendingGroupHeaderBg: '#D3E3F1',
 };
