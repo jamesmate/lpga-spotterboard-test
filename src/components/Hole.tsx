@@ -1,4 +1,5 @@
 import { Box, Group as MGroup, Stack, Text } from '@mantine/core';
+import { AnimatePresence } from 'framer-motion';
 import type { Group as GroupModel, HoleInfo, Player, SlotType } from '../data/types';
 import { GroupCard } from './GroupCard';
 import { boardColors } from '../theme/theme';
@@ -132,17 +133,19 @@ export function Hole({ hole, groups, players, state, onToggle, highlightedGroupI
                 </Text>
               )}
               <Stack gap={4} style={{ flex: 1, minHeight: 0 }}>
-                {slotGroups.map((g) => (
-                  <GroupCard
-                    key={g.id}
-                    id={`group-${g.id}`}
-                    group={g}
-                    players={players}
-                    variant="onCourse"
-                    compact
-                    highlighted={highlightedGroupIds.has(g.id)}
-                  />
-                ))}
+                <AnimatePresence>
+                  {slotGroups.map((g) => (
+                    <GroupCard
+                      key={g.id}
+                      id={`group-${g.id}`}
+                      group={g}
+                      players={players}
+                      variant="onCourse"
+                      compact
+                      highlighted={highlightedGroupIds.has(g.id)}
+                    />
+                  ))}
+                </AnimatePresence>
               </Stack>
             </Box>
           );

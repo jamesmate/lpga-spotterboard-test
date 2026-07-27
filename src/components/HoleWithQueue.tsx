@@ -1,4 +1,5 @@
 import { Box, Group as MGroup, ScrollArea, Stack, Text } from '@mantine/core';
+import { AnimatePresence } from 'framer-motion';
 import type { Group as GroupModel, HoleInfo, Player } from '../data/types';
 import { GroupCard } from './GroupCard';
 import { SLOTS } from './Hole';
@@ -106,17 +107,19 @@ export function HoleWithQueue({ hole, groups, players, queue, state, onToggle, h
           }}
         >
           <Stack gap={0} pb={4}>
-            {queue.map((g) => (
-              <GroupCard
-                key={g.id}
-                id={`group-${g.id}`}
-                group={g}
-                players={players}
-                variant="pending"
-                compact
-                highlighted={highlightedGroupIds.has(g.id)}
-              />
-            ))}
+            <AnimatePresence>
+              {queue.map((g) => (
+                <GroupCard
+                  key={g.id}
+                  id={`group-${g.id}`}
+                  group={g}
+                  players={players}
+                  variant="pending"
+                  compact
+                  highlighted={highlightedGroupIds.has(g.id)}
+                />
+              ))}
+            </AnimatePresence>
             {queue.length === 0 && (
               <Text size="10px" c={boardColors.textMuted} ta="center" mt={8}>
                 No groups waiting
@@ -162,17 +165,19 @@ export function HoleWithQueue({ hole, groups, players, queue, state, onToggle, h
                   </Text>
                 )}
                 <Stack gap={4} style={{ flex: 1, minHeight: 0 }}>
-                  {slotGroups.map((g) => (
-                    <GroupCard
-                      key={g.id}
-                      id={`group-${g.id}`}
-                      group={g}
-                      players={players}
-                      variant="onCourse"
-                      compact
-                      highlighted={highlightedGroupIds.has(g.id)}
-                    />
-                  ))}
+                  <AnimatePresence>
+                    {slotGroups.map((g) => (
+                      <GroupCard
+                        key={g.id}
+                        id={`group-${g.id}`}
+                        group={g}
+                        players={players}
+                        variant="onCourse"
+                        compact
+                        highlighted={highlightedGroupIds.has(g.id)}
+                      />
+                    ))}
+                  </AnimatePresence>
                 </Stack>
               </Box>
             );

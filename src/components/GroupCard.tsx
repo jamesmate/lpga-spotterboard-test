@@ -42,7 +42,9 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
   return (
     <motion.div
       layout
-      layoutId={`groupcard-${group.id}`}
+      initial={{ opacity: 0, scale: 0.85 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.85, transition: { duration: 0.35, ease: 'easeIn' } }}
       transition={LAYOUT_TRANSITION}
       style={{ width: '100%', height: maximize ? '100%' : undefined }}
     >
