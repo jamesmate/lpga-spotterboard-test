@@ -156,6 +156,17 @@ genGroups({ count: 8, startingHole: 1, groupNumberStart: 20, status: 'pending', 
 // Groups waiting to tee off hole 10
 genGroups({ count: 8, startingHole: 10, groupNumberStart: 28, status: 'pending', firstTeeTimeMinutes: 9 * 60 + 20 });
 
+// Demo seeding: give a handful of on-course players an existing 2+ birdie
+// streak so the 🔥 "On Fire" indicator/filter has something to show right
+// away on load, without waiting for the live sim to naturally produce one.
+// Spread across both nines so the filter has holes to dim on each row.
+const FIRE_DEMO_GROUP_IDS = ['g3', 'g7', 'g14', 'g17'];
+for (const gid of FIRE_DEMO_GROUP_IDS) {
+  const g = groups.find((grp) => grp.id === gid);
+  const pid = g?.playerIds[0];
+  if (pid) players[pid].birdieStreak = 2;
+}
+
 export const MOCK_PLAYERS = players;
 export const MOCK_GROUPS = groups;
 export const MOCK_HOLES = HOLES;
