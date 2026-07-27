@@ -1,5 +1,5 @@
 import { Box, Group, Stack, Text } from '@mantine/core';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useIsPresent } from 'framer-motion';
 import type { Group as GroupModel, Player } from '../data/types';
 import { boardColors } from '../theme/theme';
 import { surname } from '../utils/format';
@@ -51,10 +51,17 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
   // A full three-player group should always fill its hole slot edge to
   // edge, rather than leaving slot background visible beneath it.
   const maximize = isOnCourse && group.playerIds.length === 3;
+  // While this card is present, `layout` gives smooth FLIP repositioning
+  // (siblings reflowing, maximize toggling, etc). But once it starts
+  // exiting, `layout` keeps trying to animate its box to match its new
+  // (popLayout-absolute) position — fighting with the explicit slide-out
+  // below over the same transform and causing it to stall partway through
+  // before snapping away. Disabling layout for the exit phase fixes it.
+  const isPresent = useIsPresent();
 
   return (
     <motion.div
-      layout
+      layout={isPresent}
       initial={{ opacity: 1, y: -SLIDE_DISTANCE }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 1, y: SLIDE_DISTANCE }}

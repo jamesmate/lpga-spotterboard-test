@@ -127,12 +127,12 @@ export function Hole({ hole, groups, players, state, onToggle, highlightedGroupI
                   c={boardColors.holeHeaderText}
                   tt="uppercase"
                   ta="center"
-                  style={{ position: 'absolute', top: 4, left: 0, right: 0 }}
+                  style={{ position: 'absolute', top: 4, left: 0, right: 0, zIndex: 0 }}
                 >
                   {label}
                 </Text>
               )}
-              <Stack gap={4} style={{ flex: 1, minHeight: 0 }}>
+              <Stack gap={4} style={{ position: 'relative', zIndex: 1, flex: 1, minHeight: 0 }}>
                 <AnimatePresence mode="popLayout">
                   {slotGroups.map((g) => (
                     <GroupCard
