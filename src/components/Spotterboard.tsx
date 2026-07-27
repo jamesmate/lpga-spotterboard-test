@@ -17,9 +17,9 @@ function FilterButton({ label, active, onClick }: { label: string; active: boole
       onClick={onClick}
       style={{
         cursor: 'pointer',
-        border: `1.5px solid ${boardColors.toolbarBg}`,
-        background: active ? boardColors.toolbarBg : 'transparent',
-        color: active ? 'white' : boardColors.toolbarBg,
+        border: '1.5px solid white',
+        background: active ? 'white' : 'transparent',
+        color: active ? boardColors.toolbarBg : 'white',
         borderRadius: 999,
         padding: '4px 14px',
         fontSize: 12,
@@ -110,57 +110,57 @@ export function Spotterboard() {
     <Box style={{ background: boardColors.pageBg, height: '100vh', overflow: 'hidden', color: boardColors.pageText }}>
       <MGroup
         justify="space-between"
+        align="center"
+        wrap="nowrap"
         px={16}
         style={{ height: HEADER_HEIGHT, background: boardColors.toolbarBg, borderBottom: `2px solid ${boardColors.pink}` }}
       >
-        <MGroup gap={10} align="center">
+        <MGroup gap={10} align="center" wrap="nowrap" style={{ flexShrink: 0 }}>
           <img src={lpgaLogo} alt="LPGA" style={{ height: HEADER_HEIGHT - 14, width: 'auto', display: 'block' }} />
-          <Text fw={800} size="xl" c="white" tt="uppercase" lh={1}>
+          <Text fw={800} size="xl" c="white" tt="uppercase" lh={1} truncate>
             LPGA <Text span c="white" inherit fw={800}>Spotterboard</Text>
           </Text>
         </MGroup>
-        <Text size="sm" c={boardColors.textMuted}>
-          Final Round · Live
-        </Text>
-      </MGroup>
 
-      <Stack gap={6} p={10} style={{ height: `calc(100vh - ${HEADER_HEIGHT}px)`, minHeight: 0 }}>
-        <MGroup gap={16} align="center" style={{ flexShrink: 0 }} justify="space-between" wrap="wrap">
-          <MGroup gap={16} align="center" wrap="wrap">
-            <MGroup gap={8} align="center">
-              <Text size="xs" fw={700} c={boardColors.sectionLabel} tt="uppercase">
-                Par:
-              </Text>
-              {PAR_OPTIONS.map((par) => (
-                <FilterButton key={par} label={`Par ${par}`} active={activePars.has(par)} onClick={() => togglePar(par)} />
-              ))}
-              {activePars.size > 0 && (
-                <Box
-                  component="button"
-                  onClick={() => setActivePars(new Set())}
-                  style={{
-                    cursor: 'pointer',
-                    border: 'none',
-                    background: 'transparent',
-                    color: boardColors.textMuted,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    textDecoration: 'underline',
-                    padding: '4px 6px',
-                  }}
-                >
-                  Clear
-                </Box>
-              )}
-            </MGroup>
+        <MGroup gap={18} align="center" wrap="nowrap" style={{ flexShrink: 0 }}>
+          <Text size="sm" c={boardColors.textMuted} truncate>
+            Final Round · Live
+          </Text>
 
-            <MGroup gap={8} align="center">
-              <Text size="xs" fw={700} c={boardColors.sectionLabel} tt="uppercase">
-                Nine:
-              </Text>
-              <FilterButton label="Front 9" active={nineFilter === 'front'} onClick={() => toggleNine('front')} />
-              <FilterButton label="Back 9" active={nineFilter === 'back'} onClick={() => toggleNine('back')} />
-            </MGroup>
+          <MGroup gap={8} align="center" wrap="nowrap">
+            <Text size="xs" fw={700} c="white" tt="uppercase">
+              Par:
+            </Text>
+            {PAR_OPTIONS.map((par) => (
+              <FilterButton key={par} label={`Par ${par}`} active={activePars.has(par)} onClick={() => togglePar(par)} />
+            ))}
+            {activePars.size > 0 && (
+              <Box
+                component="button"
+                onClick={() => setActivePars(new Set())}
+                style={{
+                  cursor: 'pointer',
+                  border: 'none',
+                  background: 'transparent',
+                  color: boardColors.textMuted,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  textDecoration: 'underline',
+                  padding: '4px 6px',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                Clear
+              </Box>
+            )}
+          </MGroup>
+
+          <MGroup gap={8} align="center" wrap="nowrap">
+            <Text size="xs" fw={700} c="white" tt="uppercase">
+              Nine:
+            </Text>
+            <FilterButton label="Front 9" active={nineFilter === 'front'} onClick={() => toggleNine('front')} />
+            <FilterButton label="Back 9" active={nineFilter === 'back'} onClick={() => toggleNine('back')} />
           </MGroup>
 
           <TextInput
@@ -170,7 +170,7 @@ export function Spotterboard() {
             size="xs"
             radius="xl"
             leftSection={<span style={{ fontSize: 12 }}>🔍</span>}
-            style={{ width: 220 }}
+            style={{ width: 200 }}
             styles={{
               input: {
                 backgroundColor: 'white',
@@ -181,7 +181,9 @@ export function Spotterboard() {
             }}
           />
         </MGroup>
+      </MGroup>
 
+      <Stack gap={6} p={10} style={{ height: `calc(100vh - ${HEADER_HEIGHT}px)`, minHeight: 0 }}>
         {showFront && (
           <Box style={{ flex: 1, minHeight: 0 }}>
             <HoleRow

@@ -125,7 +125,7 @@ export function HoleWithQueue({ hole, groups, players, queue, state, onToggle, h
           </Stack>
         </ScrollArea>
 
-        <Stack gap={4} style={{ flex: 1, minWidth: 0, height: '100%' }}>
+        <Stack gap={0} style={{ flex: 1, minWidth: 0, height: '100%' }}>
           {SLOTS.map(({ key, label }) => {
             const slotGroups = groups.filter((g) => g.slot === key);
             return (
@@ -137,14 +137,27 @@ export function HoleWithQueue({ hole, groups, players, queue, state, onToggle, h
                   borderRadius: 6,
                   flex: 1,
                   minHeight: 0,
-                  padding: slotGroups.length ? 0 : 4,
+                  // Fixed regardless of content — a slot's box size must
+                  // never depend on whether it currently holds a group.
+                  padding: 0,
+                  position: 'relative',
                   overflow: 'hidden',
                   display: 'flex',
                   flexDirection: 'column',
                 }}
               >
                 {slotGroups.length === 0 && (
-                  <Text size="9px" fw={700} c={boardColors.holeHeaderText} tt="uppercase" mb={4} ta="center">
+                  // Positioned out of flow so it can never influence this
+                  // slot's flex-computed height (in-flow content, even with
+                  // minHeight: 0, subtly biases flex distribution).
+                  <Text
+                    size="9px"
+                    fw={700}
+                    c={boardColors.holeHeaderText}
+                    tt="uppercase"
+                    ta="center"
+                    style={{ position: 'absolute', top: 4, left: 0, right: 0 }}
+                  >
                     {label}
                   </Text>
                 )}

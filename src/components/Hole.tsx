@@ -95,44 +95,59 @@ export function Hole({ hole, groups, players, state, onToggle, highlightedGroupI
         </MGroup>
       </Box>
 
-      {SLOTS.map(({ key, label }) => {
-        const slotGroups = groups.filter((g) => g.slot === key);
-        return (
-          <Box
-            key={key}
-            style={{
-              background: boardColors.slotBg,
-              border: `1px dashed ${boardColors.emptySlotBorder}`,
-              borderRadius: 6,
-              flex: 1,
-              minHeight: 0,
-              padding: slotGroups.length ? 0 : 4,
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            {slotGroups.length === 0 && (
-              <Text size="9px" fw={700} c={boardColors.holeHeaderText} tt="uppercase" mb={4} ta="center">
-                {label}
-              </Text>
-            )}
-            <Stack gap={4}>
-              {slotGroups.map((g) => (
-                <GroupCard
-                  key={g.id}
-                  id={`group-${g.id}`}
-                  group={g}
-                  players={players}
-                  variant="onCourse"
-                  compact
-                  highlighted={highlightedGroupIds.has(g.id)}
-                />
-              ))}
-            </Stack>
-          </Box>
-        );
-      })}
+      <Stack gap={0} style={{ flex: 1, minHeight: 0 }}>
+        {SLOTS.map(({ key, label }) => {
+          const slotGroups = groups.filter((g) => g.slot === key);
+          return (
+            <Box
+              key={key}
+              style={{
+                background: boardColors.slotBg,
+                border: `1px dashed ${boardColors.emptySlotBorder}`,
+                borderRadius: 6,
+                flex: 1,
+                minHeight: 0,
+                // Fixed regardless of content — a slot's box size must never
+                // depend on whether it currently holds a group.
+                padding: 0,
+                position: 'relative',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              {slotGroups.length === 0 && (
+                // Positioned out of flow so it can never influence this
+                // slot's flex-computed height (in-flow content, even with
+                // minHeight: 0, subtly biases flex distribution).
+                <Text
+                  size="9px"
+                  fw={700}
+                  c={boardColors.holeHeaderText}
+                  tt="uppercase"
+                  ta="center"
+                  style={{ position: 'absolute', top: 4, left: 0, right: 0 }}
+                >
+                  {label}
+                </Text>
+              )}
+              <Stack gap={4}>
+                {slotGroups.map((g) => (
+                  <GroupCard
+                    key={g.id}
+                    id={`group-${g.id}`}
+                    group={g}
+                    players={players}
+                    variant="onCourse"
+                    compact
+                    highlighted={highlightedGroupIds.has(g.id)}
+                  />
+                ))}
+              </Stack>
+            </Box>
+          );
+        })}
+      </Stack>
     </Stack>
   );
 }
