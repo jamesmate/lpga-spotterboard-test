@@ -93,9 +93,16 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
             return (
               <motion.div key={pid} layout transition={LAYOUT_TRANSITION} style={{ borderTop: `1px solid ${boardColors.groupBorder}` }}>
                 <Group justify="space-between" wrap="nowrap" gap={4} px={6} py={1}>
-                  <Text size={compact ? '12px' : 'sm'} fw={700} tt="uppercase" c={boardColors.groupText} truncate style={{ flex: 1, minWidth: 0 }}>
-                    {surname(player.name)}
-                  </Text>
+                  <Group gap={4} wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+                    {isOnBall && (
+                      <Text size={compact ? '12px' : 'sm'} style={{ flexShrink: 0, lineHeight: 1 }}>
+                        🏌
+                      </Text>
+                    )}
+                    <Text size={compact ? '12px' : 'sm'} fw={700} tt="uppercase" c={boardColors.groupText} truncate style={{ flex: 1, minWidth: 0 }}>
+                      {surname(player.name)}
+                    </Text>
+                  </Group>
                   <Text size={compact ? '12px' : 'sm'} fw={700} c={scoreColor(score)} style={{ flexShrink: 0 }}>
                     {formatScore(score)}
                   </Text>
@@ -111,9 +118,6 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
                       style={{ overflow: 'hidden' }}
                     >
                       <Stack gap={2} px={6} pb={5} pt={1}>
-                        <Text size="10px" fw={800} c={boardColors.groupText} style={{ letterSpacing: 0.2 }}>
-                          Next To Hit
-                        </Text>
                         <Text size="10px" fw={600} c={boardColors.groupText} style={{ opacity: 0.85 }}>
                           Distance to pin: {group.onBall.distanceToPin} {group.onBall.distanceUnit}
                         </Text>
