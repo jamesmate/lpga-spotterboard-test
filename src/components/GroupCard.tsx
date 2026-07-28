@@ -96,9 +96,26 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
             const score = isOnCourse ? player.roundScore : player.totalScore;
             const isOnBall = isOnCourse && group.onBall?.playerId === pid;
             const isOnFire = isOnCourse && player.birdieStreak >= 2;
+            // In a maximized (3-player) card, rows must fill the card's full
+            // height with no leftover — otherwise dead space at the bottom
+            // silently merges into the last row's colour, making it look
+            // like an oversized/mismatched row. Rows grow proportionally
+            // (2 units for the expanded row, 1 for standard ones) so the
+            // expanded row is exactly double and nothing is left unfilled.
+            const rowStyle = maximize
+              ? {
+                  borderTop: `1px solid ${boardColors.groupBorder}`,
+                  overflow: 'hidden' as const,
+                  flexGrow: isOnBall ? 2 : 1,
+                  flexBasis: 0,
+                  minHeight: 0,
+                  display: 'flex' as const,
+                  flexDirection: 'column' as const,
+                }
+              : { borderTop: `1px solid ${boardColors.groupBorder}`, flexShrink: 0, overflow: 'hidden' as const };
             return (
-              <motion.div key={pid} layout transition={LAYOUT_TRANSITION} style={{ borderTop: `1px solid ${boardColors.groupBorder}`, flexShrink: 0, overflow: 'hidden' }}>
-                <Group justify="space-between" wrap="nowrap" gap={4} px={6} style={{ height: ROW_HEIGHT }}>
+              <motion.div key={pid} layout transition={LAYOUT_TRANSITION} style={rowStyle}>
+                <Group justify="space-between" wrap="nowrap" gap={4} px={6} style={{ height: ROW_HEIGHT, flexShrink: 0 }}>
                   <Group gap={4} wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
                     <Text size={compact ? '12px' : 'sm'} fw={700} tt="uppercase" c={boardColors.groupText} truncate style={{ flex: 1, minWidth: 0 }}>
                       {surname(player.name)}
@@ -123,12 +140,12 @@ export function GroupCard({ group, players, variant, compact, id, highlighted }:
                     <motion.div
                       key="onball-detail"
                       initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: ROW_HEIGHT, opacity: 1 }}
+                      animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={LAYOUT_TRANSITION}
-                      style={{ overflow: 'hidden' }}
+                      style={{ overflow: 'hidden', flex: maximize ? 1 : undefined }}
                     >
-                      <Stack gap={0} px={6} justify="flex-start" style={{ height: ROW_HEIGHT, overflow: 'hidden' }}>
+                      <Stack gap={0} px={6} justify="flex-start" style={{ height: maximize ? '100%' : ROW_HEIGHT, overflow: 'hidden' }}>
                         <Text size="9px" fw={600} c={boardColors.groupText} lh={1.3} truncate style={{ opacity: 0.85 }}>
                           Distance to pin: {group.onBall.distanceToPin} {group.onBall.distanceUnit}
                         </Text>
